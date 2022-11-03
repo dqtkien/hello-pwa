@@ -1,8 +1,19 @@
-import React from 'react';
+import React, { useState } from 'react';
 import logo from './logo.svg';
 import './App.css';
+import useNewBiometricAuth from './hooks/auth';
 
 function App() {
+  const [text, setText] = useState<any>('');
+  const { createPublickey, getChallenge } = useNewBiometricAuth();
+
+  const handleButton = async () => {
+    const challenge = getChallenge();
+    const result = await createPublickey(challenge);
+    console.log(result);
+    setText(JSON.stringify(result));
+  };
+
   return (
     <div className="App">
       <header className="App-header">
@@ -18,6 +29,8 @@ function App() {
         >
           Learn React
         </a>
+        <button onClick={handleButton}>Test New Auth</button>
+        {text}
       </header>
     </div>
   );
