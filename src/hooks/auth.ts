@@ -3,9 +3,6 @@ import { Buffer } from 'buffer';
 const bufferToBase64 = (buffer: Buffer | ArrayBuffer) =>
   btoa(String.fromCharCode(...new Uint8Array(buffer)));
 
-const base64ToBuffer = (base64: string) =>
-  Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
-
 // Call backend to get challenged key string
 // Server will save this key string for each deviceId
 // For now it is dummy text
