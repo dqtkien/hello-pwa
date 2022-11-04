@@ -45,7 +45,7 @@ const useNewBiometricAuth = () => {
   const createPublickey = async (challenge: ArrayBuffer) => {
     const user = {
       id: 123,
-      email: ' abc2@gmail.com',
+      email: ' dqtkien@gmail.com',
       displayName: 'Kevin ABC',
     };
     const attestation = await navigator.credentials.create({
@@ -96,7 +96,7 @@ const useVerifyBiometricAuth = () => {
     const assertionObj = await navigator.credentials.get({
       publicKey: {
         challenge: decode(challenge),
-        rpId: window.location.hostname,
+
         allowCredentials: [
           {
             type: 'public-key',
@@ -104,7 +104,8 @@ const useVerifyBiometricAuth = () => {
             //transports: ['internal'],
           },
         ],
-        userVerification: 'required',
+
+        timeout: 6000,
       },
     });
 

@@ -1,13 +1,9 @@
-import React, { useState } from 'react';
-import { decode } from 'base64-arraybuffer';
 import logo from './logo.svg';
 import './App.css';
 import { useNewBiometricAuth, useVerifyBiometricAuth } from './hooks/auth';
 
 function App() {
-  const [text, setText] = useState<any>('');
-  const { createPublickey, getChallenge, verifyAndStorePublicKey } =
-    useNewBiometricAuth();
+  const { createPublickey, getChallenge } = useNewBiometricAuth();
   const { requestAuth } = useVerifyBiometricAuth();
 
   const registerBio = async () => {
@@ -17,7 +13,7 @@ function App() {
   };
 
   const verifyBio = async () => {
-    const pbKey = 'x-1cIqSCQ0zTiqgSHf4tqOOgbBY1RDDUfYKjdhGIaMk';
+    const pbKey = 'x-X9gYM-A6dEDJV9TgLTZW7IKp1TjZE0DPPjObk3Wpa9w';
     const newChallenge = '6c2c79443c4a327054b8f8e030c89938';
     const result = await requestAuth(pbKey, newChallenge);
     console.log('verify', result);
@@ -40,7 +36,6 @@ function App() {
         </a>
         <button onClick={registerBio}>New Auth</button>
         <button onClick={verifyBio}> Re Auth</button>
-        {text}
       </header>
     </div>
   );
