@@ -101,7 +101,7 @@ const useVerifyBiometricAuth = () => {
           {
             type: 'public-key',
             id: decode(publicKey),
-            //transports: ['internal'],
+            transports: ['internal'],
           },
         ],
 
