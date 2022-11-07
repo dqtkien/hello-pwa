@@ -1,5 +1,4 @@
 import { encode, decode } from 'base64-arraybuffer';
-import base64url from 'base64url';
 import axios from 'axios';
 
 // Call backend to get challenged key string
@@ -46,7 +45,7 @@ const useNewBiometricAuth = () => {
   const createPublickey = async (challenge: ArrayBuffer) => {
     const user = {
       id: 123,
-      email: ' dqtkien@gmail.com',
+      email: 'dqtkien@gmail.com',
       displayName: 'Kevin ABC',
     };
     const attestation = await navigator.credentials.create({
@@ -95,24 +94,28 @@ const useNewBiometricAuth = () => {
 
 const useVerifyBiometricAuth = () => {
   const requestAuth = async (publicKey: string, challenge: string) => {
-    const assertionObj = await navigator.credentials.get({
-      publicKey: {
-        challenge: decode(challenge),
-        rpId: 'localhost',
-        allowCredentials: [
-          {
-            type: 'public-key',
-            id: decode(publicKey),
-            transports: ['internal'],
-          },
-        ],
+    try {
+      const assertionObj = await navigator.credentials.get({
+        publicKey: {
+          challenge: decode(challenge),
+          rpId: 'localhost',
+          allowCredentials: [
+            {
+              type: 'public-key',
+              id: decode(publicKey),
+              transports: ['internal'],
+            },
+          ],
 
-        timeout: 6000,
-      },
-    });
+          timeout: 1800000,
+        },
+      });
 
-    const webAuthnAttestation = publicKeyCredentialToJSON(assertionObj);
-    return webAuthnAttestation;
+      const webAuthnAttestation = publicKeyCredentialToJSON(assertionObj);
+      return webAuthnAttestation;
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return { requestAuth };
