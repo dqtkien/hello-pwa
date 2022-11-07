@@ -1,10 +1,12 @@
 import logo from './logo.svg';
 import './App.css';
 import { useNewBiometricAuth, useVerifyBiometricAuth } from './hooks/auth';
+import { useState } from 'react';
 
 function App() {
   const { createPublickey, getChallenge } = useNewBiometricAuth();
   const { requestAuth } = useVerifyBiometricAuth();
+  const [text, setText] = useState('');
 
   const registerBio = async () => {
     const challenge = getChallenge();
@@ -29,6 +31,7 @@ function App() {
 
   const verifyBio = async () => {
     const pbKey = localStorage.getItem('credId')!;
+    setText(pbKey);
     const newChallenge = '6c2c79443c4a327054b8f8e030c89938';
     const result = await requestAuth(pbKey, newChallenge);
     console.log('verify', result);
@@ -41,16 +44,9 @@ function App() {
         <p>
           Edit <code>src/App.tsx</code> and save to reload.
         </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
         <button onClick={registerBio}>New Auth</button>
         <button onClick={verifyBio}> Re Auth</button>
+        {text}
       </header>
     </div>
   );
