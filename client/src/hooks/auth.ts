@@ -1,4 +1,5 @@
 import { encode, decode } from 'base64-arraybuffer';
+import base64url from 'base64url';
 import axios from 'axios';
 
 // Call backend to get challenged key string
@@ -54,6 +55,7 @@ const useNewBiometricAuth = () => {
           authenticatorAttachment: 'platform',
           userVerification: 'required',
         },
+        timeout: 1800000,
 
         challenge,
         rp: { id: window.location.hostname, name: 'My Test Hello PWA' },
@@ -92,11 +94,11 @@ const useNewBiometricAuth = () => {
 };
 
 const useVerifyBiometricAuth = () => {
-  const requestAuth = async (challenge: string, publicKey: string) => {
+  const requestAuth = async (publicKey: string, challenge: string) => {
     const assertionObj = await navigator.credentials.get({
       publicKey: {
         challenge: decode(challenge),
-
+        rpId: 'localhost',
         allowCredentials: [
           {
             type: 'public-key',

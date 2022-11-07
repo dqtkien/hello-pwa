@@ -10,10 +10,25 @@ function App() {
     const challenge = getChallenge();
     const result = await createPublickey(challenge);
     console.log('register', result);
+    localStorage.setItem('credId', result.id);
+    console.log('credId= result.id', result.id);
+    if (window.PublicKeyCredential) {
+      PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable().then(
+        (uvpaa) => {
+          if (uvpaa) {
+            console.log('system support');
+          } else {
+            console.log('not');
+          }
+        }
+      );
+    } else {
+      console.log('not');
+    }
   };
 
   const verifyBio = async () => {
-    const pbKey = 'x-X9gYM-A6dEDJV9TgLTZW7IKp1TjZE0DPPjObk3Wpa9w';
+    const pbKey = localStorage.getItem('credId')!;
     const newChallenge = '6c2c79443c4a327054b8f8e030c89938';
     const result = await requestAuth(pbKey, newChallenge);
     console.log('verify', result);
