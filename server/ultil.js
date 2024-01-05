@@ -148,4 +148,5 @@ const verifyAssertion = ({
 
 module.exports = {
   verifyAssertion,
+  parseAttestationObject,
 };
