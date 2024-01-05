@@ -2,9 +2,11 @@ import logo from './logo.svg';
 import './App.css';
 import { useNewBiometricAuth, useVerifyBiometricAuth } from './hooks/auth';
 import { useState } from 'react';
+import axios from 'axios';
 
 function App() {
-  const { createPublickey, getChallenge } = useNewBiometricAuth();
+  const { createPublickey, getChallenge, verifyAndStorePublicKey } =
+    useNewBiometricAuth();
   const { requestAuth } = useVerifyBiometricAuth();
   const [text, setText] = useState('');
 
@@ -14,6 +16,7 @@ function App() {
     console.log('register', result);
     localStorage.setItem('credId', result.id);
     console.log('credId= result.id', result.id);
+    await verifyAndStorePublicKey(result);
     if (window.PublicKeyCredential) {
       PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable().then(
         (uvpaa) => {
@@ -30,11 +33,21 @@ function App() {
   };
 
   const verifyBio = async () => {
-    const pbKey = localStorage.getItem('credId')!;
-    setText(pbKey);
-    const newChallenge = '6c2c79443c4a327054b8f8e030c89938';
-    const result = await requestAuth(pbKey, newChallenge);
-    console.log('verify', result);
+    try {
+      const pbKey = localStorage.getItem('credId')!;
+      const newChallenge = '6c2c79443c4a327054b8f8e030c89938';
+      const result = await requestAuth(pbKey, newChallenge);
+      console.log('verify', result);
+      const response = await axios.post(
+        'http://localhost:4000/v1/verify-signature',
+        {
+          data: result,
+        }
+      );
+      console.log(response);
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   return (
@@ -46,7 +59,6 @@ function App() {
         </p>
         <button onClick={registerBio}>New Auth</button>
         <button onClick={verifyBio}> Re Auth</button>
-        {text}
       </header>
     </div>
   );

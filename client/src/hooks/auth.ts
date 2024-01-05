@@ -48,11 +48,12 @@ const useNewBiometricAuth = () => {
       email: 'dqtkien@gmail.com',
       displayName: 'Kevin ABC',
     };
-    const attestation = await navigator.credentials.create({
+    const attestation = (await navigator.credentials.create({
       publicKey: {
         authenticatorSelection: {
           authenticatorAttachment: 'platform',
           userVerification: 'required',
+          requireResidentKey: false,
         },
         timeout: 1800000,
 
@@ -67,19 +68,24 @@ const useNewBiometricAuth = () => {
           { type: 'public-key', alg: -7 },
           { type: 'public-key', alg: -257 },
         ],
+        extensions: { credProps: true },
       },
-    });
+    })) as PublicKeyCredential;
+
+    console.log(attestation);
+    if (attestation) localStorage.setItem('rawId', encode(attestation.rawId));
 
     const webAuthnAttestation = publicKeyCredentialToJSON(attestation);
+
     return webAuthnAttestation;
   };
 
   // 4.
-  const verifyAndStorePublicKey = async (publicKey: any) => {
+  const verifyAndStorePublicKey = async (bioData: any) => {
     const result = await axios.post(
       'http://localhost:4000/v1/validate-and-store-pbkey',
       {
-        publicKey,
+        bioData,
       }
     );
     console.log(result);
@@ -95,17 +101,18 @@ const useNewBiometricAuth = () => {
 const useVerifyBiometricAuth = () => {
   const requestAuth = async (publicKey: string, challenge: string) => {
     try {
+      const currentPublicKey = localStorage.getItem('rawId')!;
       const assertionObj = await navigator.credentials.get({
         publicKey: {
           challenge: decode(challenge),
-          rpId: 'localhost',
+          rpId: window.location.hostname,
           allowCredentials: [
             {
               type: 'public-key',
-              id: decode(publicKey),
-              transports: ['internal'],
+              id: decode(currentPublicKey),
             },
           ],
+          userVerification: 'required',
 
           timeout: 1800000,
         },
@@ -115,6 +122,7 @@ const useVerifyBiometricAuth = () => {
       return webAuthnAttestation;
     } catch (error) {
       console.log(error);
+      return false;
     }
   };
 
